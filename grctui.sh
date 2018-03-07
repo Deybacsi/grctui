@@ -13,23 +13,36 @@ MAXY=$(tput lines);
 . ./walletfuncs.inc
 
 
+
+clear;
+echo "This is only a rudimentary version, under development.";
+echo "It can be slow, and shit. It can miss some functions what you need.";
+echo "It comes 'as is', without any warranty.";
+echo
+echo "If you agree, press any key...";
+echo
+echo "If not, press CTRL-C";
+
 getinfo
 getmininginfo
 
 . ./walletfuncs.inc
-clear;
-repaint
-putmaininfos
+
+read -n1 -s;
+
+clearscreen;
+repaint;
+putmaininfos;
 
 COUNTER=0;	
 while [[ "$INPUT" != "x" ]]; do
 	
-	if [[ $COUNTER == 5 ]]; then
+	if [[ $COUNTER == $REFRESHINTERVAL ]]; then
 		getinfo
 		getmininginfo
 		# reread the datas
 		. ./walletfuncs.inc
-		clear
+		clearscreen
 		repaint
 		putmaininfos
 		COUNTER=0;	
@@ -40,5 +53,5 @@ while [[ "$INPUT" != "x" ]]; do
 
 done
 
->$GETINFO
->$GETMININGINFO
+exitgrctui
+

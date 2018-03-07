@@ -1,6 +1,12 @@
 # Display language
 LANG='en';
 
+# Time interval between refreshes in seconds
+REFRESHINTERVAL=5;
+
+
+
+
 # Command to run gridcoinresearchd
 GRCCOMMAND='gridcoinresearchd';
 
