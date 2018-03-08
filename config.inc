@@ -2,7 +2,7 @@
 LANG='en';
 
 # Time interval between refreshes in seconds
-REFRESHINTERVAL=5;
+REFRESHINTERVAL=10;
 
 
 
