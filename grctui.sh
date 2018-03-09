@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION='v0.2';
+VERSION='v0.3';
 
 MAXX=$(tput cols);
 MAXY=$(tput lines);
@@ -13,26 +13,29 @@ MAXY=$(tput lines);
 . ./walletfuncs.inc
 
 
+welcomescreen;
+echo "$T_LOADING:"
+getinfo "progress";
+getmininginfo "progress";
+listtransactions 10 0 "progress";
 
-clear;
-echo "This is only a rudimentary version, under development.";
-echo "It can be slow, and shit. It can miss some functions what you need.";
-echo "It comes 'as is', without any warranty.";
-echo
+getprop  "txid" $LISTTRANSACTIONS > "$LISTTRANSACTIONS_TXIDS";
+
+gettransactiondetails "progress";
+
+echo -en "\r$ANSI_CLRLINE$T_LOADING_FINISHED\n\n";
 echo "If you agree, press any key...";
 echo
 echo "If not, press CTRL-C";
 
-getinfo
-getmininginfo
-
-. ./walletfuncs.inc
+. ./walletread.inc
 
 read -n1 -s;
 
 clearscreen;
 repaint;
 putmaininfos;
+puttransactions
 
 COUNTER=0;	
 while [[ "$INPUT" != "x" ]]; do
@@ -41,10 +44,11 @@ while [[ "$INPUT" != "x" ]]; do
 		getinfo
 		getmininginfo
 		# reread the datas
-		. ./walletfuncs.inc
+		. ./walletread.inc
 		clearscreen
 		repaint
 		putmaininfos
+		puttransactions
 		COUNTER=0;	
 	fi
 

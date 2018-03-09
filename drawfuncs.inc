@@ -20,9 +20,16 @@ function setcursor {	# ( x, y)
 }             
 
 # print text to x,y
-function puttext {	# ( x, y, str
+# cuts string after [length] chars
+function puttext {	# ( x, y, str, length
 	setcursor $1 $2
-	echo -n "$3";
+	STR=$3; ENDSTR="";
+	if [[ $4 != "" ]] && [ ${#STR} -ge $4 ]; then
+		LEN=$4;
+		STR="${STR:0:LEN-1}";
+		ENDSTR=">";
+	fi
+	echo -en "$STR$ENDSTR";
 }
 
 # draw the grc logo
@@ -83,21 +90,69 @@ function repaint {
 
 # print the datas to main area
 function putmaininfos {
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+1)) "$T_BALANCE: " ;    puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+1)) "$BALANCE"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+2)) "$T_STAKE: "   ;    puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+2)) "$STAKE"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+3)) "$T_UNCONFIRMED: "; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+3)) "$UNCONFIRMED"
+	STRLEN=$(($RIGHTAREA_X-$MAINAREA_X-20));
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+1)) "$T_BALANCE: "        ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+1)) "$BALANCE" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+2)) "$T_STAKE: "          ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+2)) "$STAKE" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+3)) "$T_UNCONFIRMED: "    ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+3)) "$UNCONFIRMED" $STRLEN
 
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+5)) "$T_TOTAL: "      ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+5)) "$TOTAL"
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+5)) "$T_TOTAL: "          ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+5)) "$TOTAL" $STRLEN
 
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+7)) "$T_BLOCKS: "     ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+7)) "$BLOCKS"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+8)) "$T_DIFFICULTY: " ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+8)) "$DIFFICULTY"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+9)) "$T_NETWEIGHT: "  ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+9)) "$NETWEIGHT"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+10)) "$T_COINWEIGHT: "; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+10)) "$COINWEIGHT"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+11)) "$T_MAGNITUDE: " ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+11)) "$MAGNITUDE"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+12)) "$T_PROJECT: "   ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+12)) "$PROJECT"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+13)) "$T_CPID: "      ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+13)) "$CPID"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+14)) "$T_STATUS: "    ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+14)) "$STATUS"
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+7)) "$T_BLOCKS: "         ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+7)) "$BLOCKS" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+8)) "$T_DIFFICULTY: "     ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+8)) "$DIFFICULTY" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+9)) "$T_NETWEIGHT: "      ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+9)) "$NETWEIGHT" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+10)) "$T_COINWEIGHT: "    ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+10)) "$COINWEIGHT" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+11)) "$T_MAGNITUDE: "     ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+11)) "$MAGNITUDE" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+12)) "$T_PROJECT: "       ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+12)) "$PROJECT" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+13)) "$T_CPID: "          ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+13)) "$CPID" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+14)) "$T_STATUS: "        ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+14)) "$STATUS" $STRLEN
 
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+16)) "$T_CURRENTPOLL: "; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+16)) "$CURRENTPOLL"
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+18)) "$T_CLIENTMESSAGES: "; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+18)) "$CLIENTMESSAGES"
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+16)) "$T_CURRENTPOLL: "   ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+16)) "$CURRENTPOLL" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+18)) "$T_CLIENTMESSAGES: "; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+18)) "$CLIENTMESSAGES" $STRLEN
+}
+
+function puttransactions {
+	IFS=";"; TRACT=0;
+	# no of lines / transaction
+	LINESPERTR=4;
+	STRLEN=$(($MAXX-$RIGHTAREA_X-2));
+	tac $TRANSACTIONS | while read  TIME ADDRESS GENERATED CATEGORY TYPE AMOUNT FEE SUM TXID
+	do
+		case $CATEGORY in
+			"send") 
+				CATEGORYSTR=$T_TRANSACTION_CATEGORY_SENT;
+				COLOR=$ANSI_RED;
+				;;
+			"received")
+				CATEGORYSTR=$T_TRANSACTION_CATEGORY_RECEIVED;
+				COLOR=$ANSI_GREEN;
+				;;
+			"generate")
+				CATEGORYSTR=$T_TRANSACTION_CATEGORY_MINED;
+				COLOR=$ANSI_GREEN;
+				;;
+			*)
+				CATEGORYSTR=$T_TRANSACTION_CATEGORY_UNKNOWN;
+				COLOR=$THEME_NORMAL;
+				;;
+		esac
+		case $TYPE in
+			"Interest")
+				TYPESTR=$T_TRANSACTION_TYPE_INTEREST;
+				;;
+			*)
+				TYPESTR=$TYPE;
+		esac
+		
+		# print only, if it fits to screen
+		#if [[ $(($LOGOBOTTOM+1+($TRACT*$LINESPERTR)+3)) < $MAXY ]]; then
+			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR  )) $(date -d @$TIME) $STRLEN;
+			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) $COLOR
+			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) "$CATEGORYSTR $TYPESTR $SUM" $STRLEN;
+			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) $THEME_NORMAL
+			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+2)) ""
+			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+3)) ""
+		#fi
+		# inc the actual line number counter
+		TRACT=$(($TRACT+1));
+	done
 }

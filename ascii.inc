@@ -1,3 +1,4 @@
+
 SGRCLOGO=(
 '____ ____ _ ___  ____ ____ _ __ _'
 '|__, |--< | |__> |___ [__] | | \|'
@@ -17,3 +18,11 @@ BOINCLOGO=(
 '___/ \______'
 );
 
+ANSI_CLRLINE="\033[K";
+ANSI_RESET="\033[0m";
+ANSI_RED="\033[31m";
+ANSI_GREEN="\033[32m";
+
+# Theme
+
+THEME_NORMAL=$ANSI_RESET;
