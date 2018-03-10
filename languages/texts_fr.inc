@@ -3,7 +3,7 @@
 T_OVERVIEW='Aperçu';
 T_SENDCOINS='Envoyer';
 T_RECVCOINS='Recevoir';
-T_TRANSACTIONS='Carnet d'adresses';
+T_TRANSACTIONS="Carnet d'adresses";
 T_VOTING='Voter';
 
 # Main area texts
@@ -29,7 +29,7 @@ T_CLIENTMESSAGES='Messages du wallet';
 # Loading texts
 T_LOADING='Chargement';
 T_LOADING_WALLET_INFOS='Chargement des informations du portefeuille';
-T_LOADING_WALLET_EINFOS='Chargement d'informations supplémentaires';
+T_LOADING_WALLET_EINFOS="Chargement d'informations supplémentaires";
 T_LOADING_TRANSACTIONS='Chargement de la liste des transactions';
 T_LOADING_TRANSACTION_DATA='Chargement des données de transactions';
 T_LOADING_FINISHED='Terminé';
