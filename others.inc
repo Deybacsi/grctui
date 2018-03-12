@@ -8,6 +8,7 @@ function welcomescreen {
 
 
 function exitgrctui {
+	echo -e "$ANSI_RESET";
 	clear;
 	echo "Thanks for using GrcTUI $VERSION";
 	echo "----------------------------";

@@ -4,6 +4,8 @@ LANG="en";
 # Time interval between refreshes in seconds
 REFRESHINTERVAL=10;
 
+# Transactions to list
+LAST_TRANSACTION_NO=10
 
 
 

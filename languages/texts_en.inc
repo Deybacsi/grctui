@@ -4,7 +4,8 @@
 T_OVERVIEW='Overview';
 T_SENDCOINS='Send coins';
 T_RECVCOINS='Receive coins';
-T_TRANSACTIONS='Address book';
+T_TRANSACTIONS='Transactions'
+T_ADDRESSBOOK='Address book';
 T_VOTING='Voting';
 
 # Main area texts

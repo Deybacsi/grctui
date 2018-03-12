@@ -3,7 +3,8 @@
 T_OVERVIEW='Aperçu';
 T_SENDCOINS='Envoyer';
 T_RECVCOINS='Recevoir';
-T_TRANSACTIONS="Carnet d'adresses";
+T_TRANSACTIONS='Transactions';
+T_ADDRESSBOOK="Carnet d'adresses";
 T_VOTING='Voter';
 
 # Main area texts

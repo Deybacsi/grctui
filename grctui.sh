@@ -8,6 +8,7 @@ MAXY=$(tput lines);
 . ./ascii.inc
 . ./config.inc
 . ./drawfuncs.inc
+. ./languages/texts_en.inc
 . ./languages/texts_$LANG.inc
 . ./others.inc
 . ./walletfuncs.inc
@@ -17,7 +18,7 @@ welcomescreen;
 echo "$T_LOADING:"
 getinfo "progress";
 getmininginfo "progress";
-listtransactions 10 0 "progress";
+listtransactions $LAST_TRANSACTION_NO 0 "progress";
 
 getprop  "txid" $LISTTRANSACTIONS > "$LISTTRANSACTIONS_TXIDS";
 
@@ -32,6 +33,10 @@ echo "If not, press CTRL-C";
 
 read -n1 -s;
 
+echo -e $THEME_TEXT;
+
+trap 'repaint' WINCH
+
 clearscreen;
 repaint;
 putmaininfos;
@@ -43,12 +48,12 @@ while [[ "$INPUT" != "x" ]]; do
 	if [[ $COUNTER == $REFRESHINTERVAL ]]; then
 		getinfo
 		getmininginfo
+		listtransactions $LAST_TRANSACTION_NO 0
 		# reread the datas
 		. ./walletread.inc
-		clearscreen
+		
 		repaint
-		putmaininfos
-		puttransactions
+
 		COUNTER=0;	
 	fi
 

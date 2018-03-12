@@ -3,7 +3,8 @@
 T_OVERVIEW='Übersicht';
 T_SENDCOINS='Senden';
 T_RECVCOINS='Empfangen';
-T_TRANSACTIONS='Adressbuch';
+T_TRANSACTIONS='Transaktionen';
+T_ADDRESSBOOK='Adressbuch';
 T_VOTING='Abstimmen';
 
 # Main area texts

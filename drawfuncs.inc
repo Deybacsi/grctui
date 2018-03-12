@@ -1,15 +1,19 @@
 
-# first line after the logo
-LOGOBOTTOM=5;
+function calculate_screen {
+	MAXX=$(tput cols);
+	MAXY=$(tput lines);
+	
+	# first line after the logo
+	LOGOBOTTOM=5;
 
-SECTION=$(($MAXX / 5));
-LEFTAREA_X=0;
-LEFTAREA_W=$(($SECTION -1));
-MAINAREA_X=$SECTION;
-MAINAREA_W=$(($SECTION*2));
-RIGHTAREA_X=$(($SECTION*3+1));
-RIGHTAREA_W=$(($SECTION*2));
-
+	SECTION=$(($MAXX / 5));
+	LEFTAREA_X=0;
+	LEFTAREA_W=$(($SECTION -1));
+	MAINAREA_X=$SECTION;
+	MAINAREA_W=$(($SECTION*2));
+	RIGHTAREA_X=$(($SECTION*3+1));
+	RIGHTAREA_W=$(($SECTION*2));
+}
 function clearscreen {
 	echo -en "\033[2J";
 }
@@ -66,8 +70,7 @@ function drawline {	# ( x, y, len, char)
 
 # draw a vertical line to x,y height height with char
 function drawvertline {	# ( x, y, height, char)
-	for (( i=1; i<=$3; i++ ))
-	do
+	for (( i=1; i<=$3; i++ )); 	do
 		setcursor $1 $(($2+$i-1))
 		echo -n "$4";
 	done
@@ -75,18 +78,17 @@ function drawvertline {	# ( x, y, height, char)
 
 # draw the header - grc+boinc logo + separator line
 function drawheader {
+	echo -en "$THEME_HEADER_BACKG$THEME_HEADER_FOREG";
+	for (( i=0; i<$LOGOBOTTOM-1; i++ ));	do
+		setcursor 0 $i ; echo -en $ANSI_CLRLINE;
+	done
 	drawgrclogo 0 0
 	drawboinclogo $(($MAXX-${#BOINCLOGO})) 0
 	drawline 0 4 $(($MAXX-${#BOINCLOGO})) '_'
 	puttext $((${#GRCLOGO}+7)) $(($LOGOBOTTOM-2)) "x - Exit";
+	echo -en "$THEME_TEXT";
 }
 
-# redraw the screen - header + separators
-function repaint {
-	drawheader
-	drawvertline $(($MAINAREA_X-1)) $LOGOBOTTOM $(($MAXY-$LOGOBOTTOM)) '|'
-	drawvertline $(($RIGHTAREA_X-1)) $LOGOBOTTOM $(($MAXY-$LOGOBOTTOM)) '|'
-}
 
 # print the datas to main area
 function putmaininfos {
@@ -106,8 +108,10 @@ function putmaininfos {
 	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+13)) "$T_CPID: "          ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+13)) "$CPID" $STRLEN
 	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+14)) "$T_STATUS: "        ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+14)) "$STATUS" $STRLEN
 
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+16)) "$T_CURRENTPOLL: "   ; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+16)) "$CURRENTPOLL" $STRLEN
-	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+18)) "$T_CLIENTMESSAGES: "; puttext $(($MAINAREA_X+18)) $(($LOGOBOTTOM+18)) "$CLIENTMESSAGES" $STRLEN
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+16)) "$T_CURRENTPOLL: "   ;
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+17)) "$CURRENTPOLL" $(($STRLEN+18));
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+19)) "$T_CLIENTMESSAGES: ";
+	puttext $(($MAINAREA_X+1)) $(($LOGOBOTTOM+20)) "$CLIENTMESSAGES" $(($STRLEN+18));
 }
 
 function puttransactions {
@@ -120,19 +124,23 @@ function puttransactions {
 		case $CATEGORY in
 			"send") 
 				CATEGORYSTR=$T_TRANSACTION_CATEGORY_SENT;
-				COLOR=$ANSI_RED;
+				COLOR=$ANSI_BG_RED;
+				TR_LOGO=( " \\\\\ " " // " );
 				;;
 			"received")
 				CATEGORYSTR=$T_TRANSACTION_CATEGORY_RECEIVED;
-				COLOR=$ANSI_GREEN;
+				COLOR=$ANSI_BG_GREEN;
+				TR_LOGO=( " // " " \\\\\ " );
 				;;
 			"generate")
 				CATEGORYSTR=$T_TRANSACTION_CATEGORY_MINED;
-				COLOR=$ANSI_GREEN;
+				COLOR=$ANSI_BG_GREEN;
+				TR_LOGO=( " \\/ " " /\\ " );
 				;;
 			*)
 				CATEGORYSTR=$T_TRANSACTION_CATEGORY_UNKNOWN;
 				COLOR=$THEME_NORMAL;
+				TR_LOGO=( "    " "    " );
 				;;
 		esac
 		case $TYPE in
@@ -144,15 +152,37 @@ function puttransactions {
 		esac
 		
 		# print only, if it fits to screen
-		#if [[ $(($LOGOBOTTOM+1+($TRACT*$LINESPERTR)+3)) < $MAXY ]]; then
-			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR  )) $(date -d @$TIME) $STRLEN;
-			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) $COLOR
-			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) "$CATEGORYSTR $TYPESTR $SUM" $STRLEN;
-			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) $THEME_NORMAL
-			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+2)) ""
-			puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+3)) ""
-		#fi
+		if [ $(($LOGOBOTTOM+1+($TRACT*$LINESPERTR)+3)) -le $MAXY ]; then
+			X=5;
+			echo -en "$ANSI_BG_WHITE$COLOR"
+			i=0;
+			for row in "${TR_LOGO[@]}"
+			do
+				puttext $(($RIGHTAREA_X+1)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+$i)) "$row"
+				i=$(($i+1))
+			done
+
+			echo -en "$THEME_TEXT"
+			puttext $(($RIGHTAREA_X+1+$X)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR  )) $(date -d @$TIME) $STRLEN;
+			puttext $(($RIGHTAREA_X+1+$X)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+1)) "$CATEGORYSTR $TYPESTR $SUM" $STRLEN;
+			puttext $(($RIGHTAREA_X+1+$X)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+2)) ""
+			puttext $(($RIGHTAREA_X+1+$X)) $(($LOGOBOTTOM+1+$TRACT*$LINESPERTR+3)) ""
+		fi
 		# inc the actual line number counter
 		TRACT=$(($TRACT+1));
 	done
+}
+
+# redraw the screen - header + separators
+function repaint {
+	calculate_screen
+	echo -e "$THEME_TEXT";
+	clearscreen
+	drawheader
+	#drawvertline $(($MAINAREA_X-1)) $LOGOBOTTOM $(($MAXY-$LOGOBOTTOM)) '|'
+	#drawvertline $(($RIGHTAREA_X-1)) $LOGOBOTTOM $(($MAXY-$LOGOBOTTOM)) '|'
+	putmaininfos
+	puttransactions
+	
+
 }
